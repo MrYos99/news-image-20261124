@@ -723,7 +723,13 @@ def build():
 
 def main():
     img = build()
-    out = os.path.join(os.path.dirname(os.path.abspath(__file__)), "entry.png")
+    # The grader mounts the repository read-only, so the image must go to
+    # the arena output directory when one is provided. Locally (no
+    # MAKEFUN_OUTPUT_DIR) keep the old behaviour: write beside this file.
+    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR") or os.path.dirname(
+        os.path.abspath(__file__))
+    os.makedirs(out_dir, exist_ok=True)
+    out = os.path.join(out_dir, "entry.png")
     img.save(out, "PNG", optimize=True)
     print("wrote", out, os.path.getsize(out), "bytes")
 
