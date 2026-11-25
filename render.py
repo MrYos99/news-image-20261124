@@ -575,7 +575,13 @@ def draw_small_card(draw, x, y, w, story):
                    outline=(200, 200, 195), width=1)
     draw_icon(draw, x - 34, y, w, icon_h, art)
     draw_badge(draw, x + w - 68, y + 4, badge)
-    ty = y + icon_h + 6
+    hlines = wrap(draw, headline, SERIF_B(15), w)
+    # Two headlines need a third line to read in full (measured: no
+    # shortening fits them in two lines at this size without losing facts).
+    # Tighten only those cards (2px gap, 15px leading) so the extra line
+    # still clears the next row: measured source bottom 584 vs row top 588.
+    three = len(hlines) > 2
+    ty = y + icon_h + (2 if three else 6)
     col = REGION_COLORS[region]
     draw.ellipse([x, ty, x + 15, ty + 15], fill=col)
     fnt_n = SANS_B(10)
@@ -584,9 +590,10 @@ def draw_small_card(draw, x, y, w, story):
               fill=(255, 255, 255))
     text(draw, (x + 20, ty + 2), region.upper(), SANS_B(9), col)
     ty += 18
-    for line in wrap(draw, headline, SERIF_B(15), w)[:2]:
+    hlh = 15 if three else 18
+    for line in hlines[:3]:
         text(draw, (x, ty), line, SERIF_B(15))
-        ty += 18
+        ty += hlh
     for line in wrap(draw, detail, SANS(10), w)[:1]:
         text(draw, (x, ty), line, SANS(10), INK_SOFT)
         ty += 13
